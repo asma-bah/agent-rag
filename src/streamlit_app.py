@@ -1,4 +1,5 @@
 import streamlit as st #outil qui fait la liaison entre le code et l'interface utilisateur
+import os
 
 from dotenv import load_dotenv
 
@@ -8,6 +9,10 @@ from langchain_community.embeddings import FastEmbedEmbeddings
 
 # Load environment variables from .env file
 load_dotenv()
+
+# chemin du dossier faiss_index, situé À CÔTÉ de ce fichier (marche en local ET sur Hugging Face)
+DOSSIER = os.path.dirname(os.path.abspath(__file__))
+CHEMIN_INDEX = os.path.join(DOSSIER, "faiss_index")
 
 # Récupère le texte de la réponse, qu'elle soit un texte simple ou une liste de blocs
 def extraire_texte(reponse):
@@ -27,8 +32,11 @@ def extraire_texte(reponse):
 @st.cache_resource 
 def charger_assistant():
     embeddings = FastEmbedEmbeddings()
+
+    #charger la base de données vectorielle FAISS à partir du dossier "faiss_index" en utilisant les embeddings FastEmbedEmbeddings.
+
     vectorstore = FAISS.load_local(
-        "faiss_index", 
+        CHEMIN_INDEX, 
         embeddings, 
         allow_dangerous_deserialization=True
         )
